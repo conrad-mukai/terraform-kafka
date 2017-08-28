@@ -1,0 +1,7 @@
+{
+  "source": ["aws.ec2"],
+  "detail": {
+    "state": ["stopped", "terminated"]
+  },
+  "resources": ["${instances}"]
+}

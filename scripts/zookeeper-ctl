@@ -1,0 +1,53 @@
+#!/bin/sh
+#
+# Purpose: This script starts and stops the Zookeeper daemon
+#
+# chkconfig: - 90 10
+# description:  Zookeeper daemon
+
+### BEGIN INIT INFO
+# Provides:          zookeeper
+# Required-Start:    $network $local_fs $remote_fs
+# Required-Stop:     $network $local_fs $remote_fs
+# Should-Start:      
+# Should-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Controls Zookeeper as a Service
+### END INIT INFO
+
+# Where you extracted the Solr distribution bundle
+ZK_INSTALL_DIR="/opt/zookeeper/zookeeper-${version}"
+
+if [ ! -d "$ZK_INSTALL_DIR" ]; then
+  echo "$ZK_INSTALL_DIR not found! Please check the ZK_INSTALL_DIR setting in your $0 script."
+  exit 1
+fi
+
+# Specify the user to run Zookeeper as; if not set, then Zookeeper will run as root.
+# Running Zookeeper as root is not recommended for production environments
+RUNAS="zookeeper"
+
+# verify the specified run as user exists
+runas_uid="`id -u "$RUNAS"`"
+if [ $? -ne 0 ]; then
+  echo "User $RUNAS not found! Please create the $RUNAS user before running this script."
+  exit 1
+fi
+
+case "$1" in
+  start|stop|restart|status)
+    ZK_CMD="$1"
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|status}"
+    exit
+esac
+
+if [ -n "$RUNAS" ]; then
+  su -c "ZOO_LOG4J_PROP=\" \" \"$ZK_INSTALL_DIR/bin/zkServer.sh\" $ZK_CMD" - "$RUNAS"
+else
+  ZOO_LOG4J_PROP=" " "$ZK_INSTALL_DIR/bin/zkServer.sh" "$ZK_CMD"
+fi
+
+exit 0
