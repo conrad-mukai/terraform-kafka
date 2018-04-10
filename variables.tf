@@ -147,7 +147,7 @@ variable "bastion_private_key" {
   description = "local path to ssh private key for bastion access"
 }
 
-# variable "cloudwatch_alarm_arn" {
-#   type        = "string"
-#   description = "cloudwatch alarm ARN"
-# }
+variable "cloudwatch_alarm_arn" {
+  type        = "string"
+  description = "cloudwatch alarm ARN"
+}
