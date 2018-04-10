@@ -37,7 +37,6 @@ fabric.properties
 # Terraform
 .terraform
 terraform.tfstate*
-terraform.tfvars
 
 # Mac
 .DS_Store
