@@ -17,7 +17,7 @@ resource "aws_cloudwatch_metric_alarm" "zookeeper-cpu-alarm" {
     InstanceId = "${element(aws_instance.zookeeper-server.*.id, count.index)}"
   }
 
-  #alarm_actions = ["${var.cloudwatch_alarm_arn}"]
+  alarm_actions = ["${var.cloudwatch_alarm_arn}"]
 }
 
 resource "aws_cloudwatch_metric_alarm" "kafka-cpu-alarm" {
@@ -35,7 +35,7 @@ resource "aws_cloudwatch_metric_alarm" "kafka-cpu-alarm" {
     InstanceId = "${element(aws_instance.kafka-server.*.id, count.index)}"
   }
 
-  #alarm_actions = ["${var.cloudwatch_alarm_arn}"]
+  alarm_actions = ["${var.cloudwatch_alarm_arn}"]
 }
 
 resource "aws_cloudwatch_metric_alarm" "zookeeper-status-alarm" {
@@ -53,7 +53,7 @@ resource "aws_cloudwatch_metric_alarm" "zookeeper-status-alarm" {
     InstanceId = "${element(aws_instance.zookeeper-server.*.id, count.index)}"
   }
 
-  #alarm_actions = ["${var.cloudwatch_alarm_arn}"]
+  alarm_actions = ["${var.cloudwatch_alarm_arn}"]
 }
 
 resource "aws_cloudwatch_metric_alarm" "kafka-status-alarm" {
@@ -71,7 +71,7 @@ resource "aws_cloudwatch_metric_alarm" "kafka-status-alarm" {
     InstanceId = "${element(aws_instance.kafka-server.*.id, count.index)}"
   }
 
-  #alarm_actions = ["${var.cloudwatch_alarm_arn}"]
+  alarm_actions = ["${var.cloudwatch_alarm_arn}"]
 }
 
 resource "aws_cloudwatch_metric_alarm" "zookeeper-proc-alarm" {
@@ -89,7 +89,7 @@ resource "aws_cloudwatch_metric_alarm" "zookeeper-proc-alarm" {
     InstanceId = "${element(aws_instance.zookeeper-server.*.id, count.index)}"
   }
 
-  #alarm_actions = ["${var.cloudwatch_alarm_arn}"]
+  alarm_actions = ["${var.cloudwatch_alarm_arn}"]
 }
 
 resource "aws_cloudwatch_metric_alarm" "kafka-proc-alarm" {
@@ -107,7 +107,7 @@ resource "aws_cloudwatch_metric_alarm" "kafka-proc-alarm" {
     InstanceId = "${element(aws_instance.kafka-server.*.id, count.index)}"
   }
 
-  #alarm_actions = ["${var.cloudwatch_alarm_arn}"]
+  alarm_actions = ["${var.cloudwatch_alarm_arn}"]
 }
 
 resource "aws_cloudwatch_event_rule" "zookeeper-event-rule" {
@@ -116,11 +116,11 @@ resource "aws_cloudwatch_event_rule" "zookeeper-event-rule" {
   event_pattern = "${data.template_file.zookeeper-state-change.rendered}"
 }
 
-# resource "aws_cloudwatch_event_target" "zookeeper-event-target" {
-#   target_id = "zookeeper"
-#   rule      = "${aws_cloudwatch_event_rule.zookeeper-event-rule.name}"
-#   arn       = "${var.cloudwatch_alarm_arn}"
-# }
+resource "aws_cloudwatch_event_target" "zookeeper-event-target" {
+  target_id = "zookeeper"
+  rule      = "${aws_cloudwatch_event_rule.zookeeper-event-rule.name}"
+  arn       = "${var.cloudwatch_alarm_arn}"
+}
 
 resource "aws_cloudwatch_event_rule" "kafka-event-rule" {
   name          = "${var.environment}-kafka-event"
@@ -128,8 +128,8 @@ resource "aws_cloudwatch_event_rule" "kafka-event-rule" {
   event_pattern = "${data.template_file.kafka-state-change.rendered}"
 }
 
-# resource "aws_cloudwatch_event_target" "kafka-event-target" {
-#   target_id = "kafka"
-#   rule      = "${aws_cloudwatch_event_rule.kafka-event-rule.name}"
-#   arn       = "${var.cloudwatch_alarm_arn}"
-# }
+resource "aws_cloudwatch_event_target" "kafka-event-target" {
+  target_id = "kafka"
+  rule      = "${aws_cloudwatch_event_rule.kafka-event-rule.name}"
+  arn       = "${var.cloudwatch_alarm_arn}"
+}
