@@ -23,7 +23,7 @@ private_key = "/Users/saurabhjain/Downloads/saurabh-throwaway.pem"
 
 # Kafka cluster configuration
 
-ebs_volume_ids = ["vol-05d4ba2c56b9de23f", "vol-07a4bdf7a09ff2383", "vol-02de324f1619d4302", "vol-06f4dc86fac846672", "vol-06286c41e35683633", "vol-036818006ef643252", "vol-0ac08d2d8b8307491"]
+ebs_volume_ids = ["vol-05d4ba2c56b9de23f", "vol-07a4bdf7a09ff2383", "vol-02de324f1619d4302", "vol-06f4dc86fac846672", "vol-06286c41e35683633", "vol-036818006ef643252", "vol-0ac08d2d8b8307491", "vol-055d466bf1109e95d", "vol-0ce5d2c0d8f8c4c19"]
 key_name = "saurabh-throwaway"
 kafka_ami = "ami-1853ac65"
 kafka_instance_type = "m5.large"
