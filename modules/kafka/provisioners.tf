@@ -4,29 +4,35 @@
 
 resource "null_resource" "zookeeper-nodes" {
   count = "${aws_instance.zookeeper-server.count}"
+
   triggers {
     zookeeper_id = "${element(aws_instance.zookeeper-server.*.id, count.index)}"
   }
+
   connection {
-    host = "${element(aws_instance.zookeeper-server.*.private_ip, count.index)}"
-    user = "${var.zookeeper_user}"
-    private_key = "${file(var.private_key)}"
-    bastion_host = "${var.bastion_ip}"
-    bastion_user = "${var.bastion_user}"
+    host                = "${element(aws_instance.zookeeper-server.*.private_ip, count.index)}"
+    user                = "${var.zookeeper_user}"
+    private_key         = "${file(var.private_key)}"
+    bastion_host        = "${var.bastion_ip}"
+    bastion_user        = "${var.bastion_user}"
     bastion_private_key = "${file(var.bastion_private_key)}"
   }
+
   provisioner "file" {
-    content = "${data.template_file.setup-zookeeper.rendered}"
+    content     = "${data.template_file.setup-zookeeper.rendered}"
     destination = "/tmp/setup-zookeeper.sh"
   }
+
   provisioner "file" {
-    content = "${data.template_file.zookeeper-ctl.rendered}"
+    content     = "${data.template_file.zookeeper-ctl.rendered}"
     destination = "/tmp/zookeeper-ctl"
   }
+
   provisioner "file" {
-    content = "${data.template_file.zookeeper-status.rendered}"
+    content     = "${data.template_file.zookeeper-status.rendered}"
     destination = "/tmp/zookeeper-status.sh"
   }
+
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/setup-zookeeper.sh",
@@ -42,38 +48,44 @@ resource "null_resource" "zookeeper-nodes" {
       "sudo chown zookeeper:zookeeper /opt/zookeeper/zookeeper-status.sh",
       "echo '* * * * * /opt/zookeeper/zookeeper-status.sh' > /tmp/crontab",
       "sudo crontab -u zookeeper /tmp/crontab",
-      "rm /tmp/crontab"
+      "rm /tmp/crontab",
     ]
   }
 }
 
 resource "null_resource" "kafka-nodes" {
-  count = "${aws_instance.kafka-server.count}"
+  count      = "${aws_instance.kafka-server.count}"
   depends_on = ["null_resource.zookeeper-nodes"]
+
   triggers {
-    kafka_attach_id = "${element(aws_volume_attachment.attach.*.id, count.index)}"
-    zookeeper_id = "${join(",", null_resource.zookeeper-nodes.*.id)}"
+    kafka_attach_id = "$(element(var.ebs_attachment_strategy, count.index)}"
+    zookeeper_id    = "${join(",", null_resource.zookeeper-nodes.*.id)}"
   }
+
   connection {
-    host = "${element(aws_instance.kafka-server.*.private_ip, count.index)}"
-    user = "${var.kafka_user}"
-    private_key = "${file(var.private_key)}"
-    bastion_host = "${var.bastion_ip}"
-    bastion_user = "${var.bastion_user}"
+    host                = "${element(aws_instance.kafka-server.*.private_ip, count.index)}"
+    user                = "${var.kafka_user}"
+    private_key         = "${file(var.private_key)}"
+    bastion_host        = "${var.bastion_ip}"
+    bastion_user        = "${var.bastion_user}"
     bastion_private_key = "${file(var.bastion_private_key)}"
   }
+
   provisioner "file" {
-    content = "${element(data.template_file.setup-kafka.*.rendered, count.index)}"
+    content     = "${element(data.template_file.setup-kafka.*.rendered, count.index)}"
     destination = "/tmp/setup-kafka.sh"
   }
+
   provisioner "file" {
-    content = "${data.template_file.kafka-ctl.rendered}"
+    content     = "${data.template_file.kafka-ctl.rendered}"
     destination = "/tmp/kafka-ctl"
   }
+
   provisioner "file" {
-    content = "${data.template_file.kafka-status.rendered}"
+    content     = "${data.template_file.kafka-status.rendered}"
     destination = "/tmp/kafka-status.sh"
   }
+
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/setup-kafka.sh",
@@ -88,7 +100,7 @@ resource "null_resource" "kafka-nodes" {
       "sudo chmod a+x /opt/kafka/kafka-status.sh",
       "echo '* * * * * /opt/kafka/kafka-status.sh' > /tmp/crontab",
       "sudo crontab /tmp/crontab",
-      "rm /tmp/crontab"
+      "rm /tmp/crontab",
     ]
   }
 }
