@@ -12,6 +12,11 @@ variable "app_name" {
   default     = "infra"
 }
 
+variable "availability_zone" {
+  type        = "string"
+  description = "specific availability zone"
+}
+
 variable "brokers_per_az" {
   description = "number of Kafka brokers per AZ"
   default     = 1
@@ -90,6 +95,12 @@ variable "ebs_device_name" {
 variable "ebs_volume_ids" {
   type        = "list"
   description = "list of EBS volume IDs"
+  default     = []
+}
+
+variable "ebs_attachment_strategy" {
+  type = "string"
+  description = "which volume attachment method to use"
 }
 
 variable "num_partitions" {
